@@ -18,12 +18,14 @@ function Chief() {
   useEffect(() => {
     async function getHat() {
         let decimals = ethers.utils.bigNumberify("1000000000000000000");
+        let precision = ethers.utils.bigNumberify("100000000000000");
 
         let hatAddress = await chiefContract.hat();
         let hatSupply = await chiefContract.approvals(hatAddress);
         let hatAmount = hatSupply.div(decimals)
         let hatAmountRounded = hatAmount.mul(decimals);
         let hatDecimals = hatSupply.mod(hatAmountRounded);
+        hatDecimals = hatDecimals.div(precision);
         let hatString = hatAmount.toString() + "." + hatDecimals.toString();
         setHat(hatString);
     }

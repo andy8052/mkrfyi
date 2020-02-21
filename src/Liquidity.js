@@ -25,28 +25,19 @@ function Liquidity() {
 
   useEffect(() => {
     async function getLiquidity() {
-      let decimals = ethers.utils.bigNumberify("1000000000000000000");
+      let precision = ethers.utils.bigNumberify("100000000000000");
 
       let aaveSupply = await aaveContract.totalSupply();
-      let aaveAmount = aaveSupply.div(decimals)
-      let aaveAmountRounded = aaveAmount.mul(decimals);
-      let aaveDecimals = aaveSupply.mod(aaveAmountRounded);
-      let aaveString = aaveAmount.toString() + "." + aaveDecimals.toString();
-      setAave(aaveString);
+      aaveSupply = aaveSupply.div(precision);
+      let aaveNum = aaveSupply.toNumber() / 10000;
+      setAave(aaveNum);
 
       let uniSupply = await mkrContract.balanceOf(uniswapAddress);
-      let uniAmount = uniSupply.div(decimals)
-      let uniAmountRounded = uniAmount.mul(decimals);
-      let uniDecimals = uniSupply.mod(uniAmountRounded);
-      let uniString = uniAmount.toString() + "." + uniDecimals.toString();
-      setUniswap(uniString);
+      uniSupply = uniSupply.div(precision);
+      let uniNum = uniSupply.toNumber() / 10000;
+      setUniswap(uniNum);
 
-      let liqSupply = aaveSupply.add(uniSupply);
-      let liqAmount = liqSupply.div(decimals)
-      let liqAmountRounded = liqAmount.mul(decimals);
-      let liqDecimals = liqSupply.mod(liqAmountRounded);
-      let liqString = liqAmount.toString() + "." + liqDecimals.toString();
-      setLiquidity(liqString);
+      setLiquidity(uniNum + aaveNum);
     }
 
     getLiquidity();
