@@ -64,7 +64,7 @@ function Liquidity() {
       let paradexSupply = await mkrContract.balanceOf(paradexAddress);
       paradexSupply = paradexSupply.div(precision);
       let paradexNum = paradexSupply.toNumber() / 10000;
-      setSwitcheo(paradexNum);
+      setParadex(paradexNum);
 
       setOthers(eth2daiNum + switcheoNum + paradexNum);
 
