@@ -17,6 +17,7 @@ const uniswapAddress = "0x2c4bd064b998838076fa341a83d007fc2fa50957";
 const oasisAddress = "0x794e6e91555438afc3ccf1c5076a74f42133d08d";
 const eth2daiAddress = "0x39755357759ce0d7f32dc8dc45414cca409ae24e";
 const switcheoAddress = "0x7ee7ca6e75de79e618e88bdf80d0b1db136b22d0";
+const paradexAddress = "0xd2045edc40199019e221d71c0913343f7908d0d5";
 
 const aaveContract = new ethers.Contract(aaveAddress, aaveABI, provider);
 const mkrContract = new ethers.Contract(mkrAddress, mkrABI, provider);
@@ -27,6 +28,7 @@ function Liquidity() {
   const [oasis, setOasis] = useState("");
   const [eth2dai, setEth2dai] = useState("");
   const [switcheo, setSwitcheo] = useState("");
+  const [paradex, setParadex] = useState("");
   const [others, setOthers] = useState("");
   const [liquidity, setLiquidity] = useState("");
 
@@ -59,7 +61,12 @@ function Liquidity() {
       let switcheoNum = switcheoSupply.toNumber() / 10000;
       setSwitcheo(switcheoNum);
 
-      setOthers(eth2daiNum + switcheoNum);
+      let paradexSupply = await mkrContract.balanceOf(paradexAddress);
+      paradexSupply = paradexSupply.div(precision);
+      let paradexNum = paradexSupply.toNumber() / 10000;
+      setSwitcheo(paradexNum);
+
+      setOthers(eth2daiNum + switcheoNum + paradexNum);
 
       setLiquidity(uniNum + aaveNum + oasisNum + eth2daiNum);
     }
