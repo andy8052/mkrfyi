@@ -15,6 +15,8 @@ const aaveAddress = "0x7deB5e830be29F91E298ba5FF1356BB7f8146998";
 const mkrAddress = "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2";
 const uniswapAddress = "0x2c4bd064b998838076fa341a83d007fc2fa50957";
 const oasisAddress = "0x794e6e91555438afc3ccf1c5076a74f42133d08d";
+const eth2daiAddress = "0x39755357759ce0d7f32dc8dc45414cca409ae24e";
+const switcheoAddress = "0x7ee7ca6e75de79e618e88bdf80d0b1db136b22d0";
 
 const aaveContract = new ethers.Contract(aaveAddress, aaveABI, provider);
 const mkrContract = new ethers.Contract(mkrAddress, mkrABI, provider);
@@ -23,6 +25,9 @@ function Liquidity() {
   const [aave, setAave] = useState("");
   const [uniswap, setUniswap] = useState("");
   const [oasis, setOasis] = useState("");
+  const [eth2dai, setEth2dai] = useState("");
+  const [switcheo, setSwitcheo] = useState("");
+  const [others, setOthers] = useState("");
   const [liquidity, setLiquidity] = useState("");
 
   useEffect(() => {
@@ -44,7 +49,19 @@ function Liquidity() {
       let oasisNum = oasisSupply.toNumber() / 10000;
       setOasis(oasisNum);
 
-      setLiquidity(uniNum + aaveNum + oasisNum);
+      let eth2daiSupply = await mkrContract.balanceOf(eth2daiAddress);
+      eth2daiSupply = eth2daiSupply.div(precision);
+      let eth2daiNum = eth2daiSupply.toNumber() / 10000;
+      setEth2dai(eth2daiNum);
+
+      let switcheoSupply = await mkrContract.balanceOf(switcheoAddress);
+      switcheoSupply = switcheoSupply.div(precision);
+      let switcheoNum = switcheoSupply.toNumber() / 10000;
+      setSwitcheo(switcheoNum);
+
+      setOthers(eth2daiNum + switcheoNum);
+
+      setLiquidity(uniNum + aaveNum + oasisNum + eth2daiNum);
     }
 
     getLiquidity();
@@ -60,6 +77,8 @@ function Liquidity() {
       <p>{oasis}</p>
       <p>Aave MKR Max Flash Loan</p>
       <p>{aave}</p>
+      <p>Others</p>
+      <p>{others}</p>
     </div>
   );
 }
