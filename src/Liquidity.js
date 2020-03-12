@@ -68,7 +68,7 @@ function Liquidity() {
 
       setOthers(eth2daiNum + switcheoNum + paradexNum);
 
-      setLiquidity(uniNum + aaveNum + oasisNum + eth2daiNum);
+      setLiquidity(uniNum + aaveNum + oasisNum + eth2daiNum + switcheoNum + paradexNum);
     }
 
     getLiquidity();
