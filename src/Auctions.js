@@ -172,7 +172,6 @@ function Auctions() {
     }
 
     function saveData() {
-        console.log(auctions);
         setAuctionHist(auctions);
         setLastBlockHist(lastBlock);
         alert("data saved up to block " + lastBlock);
@@ -191,7 +190,6 @@ function Auctions() {
         }
 
         provider.on(filterAll, async (log) => {
-            console.log(log);
             let type;
             if (log.topics.length === 3){
                 type = "KICK";
@@ -224,11 +222,13 @@ function Auctions() {
         setSubscribed(false);
     }
 
-    function calcExpectedLoss() {
+    async function calcExpectedLoss() {
+        let latestBlock = await provider.getBlockNumber();
+        let price = await getEthPrice(latestBlock);
         let lossExp = 0;
         for (let i = 0; i < auctionRecords.length; i++) {
             if (auctionRecords[i] && auctionRecords[i]["last"] === "TEND") {
-                lossExp += auctionRecords[i]["price"]*auctionRecords[i]["lot"] - auctionRecords[i]["bid"];
+                lossExp += price*auctionRecords[i]["lot"] - auctionRecords[i]["bid"];
             }
         }
         setPendLoss(lossExp);
@@ -253,7 +253,6 @@ function Auctions() {
             setAuctionRecords(auctionRecordsHist);
 
             for (const log of logs) {
-                console.log(log);
                 let type;
                 if (log.topics.length === 3){
                     type = "KICK";
@@ -316,7 +315,7 @@ function Auctions() {
         </div>
         {atRisk ? 
             <>
-            <p onClick={() => calcExpectedLoss()}>update pending system loss: ${pendLoss.toFixed(2)}</p>
+            <p onClick={() => calcExpectedLoss()}>update theoretical system loss: ${pendLoss.toFixed(2)}</p>
             <div>{risky}</div>
             </>
             :
