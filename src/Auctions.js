@@ -188,8 +188,25 @@ function Auctions() {
             address: ETH_FLIP_ADDRESS
         }
 
-        provider.on(filterAll, (log) => {
+        provider.on(filterAll, async (log) => {
             console.log(log);
+            let type;
+            if (log.topics.length === 3){
+                type = "KICK";
+            } else {
+                type = getType(log.topics[0]);
+            }
+
+            let price = await getEthPrice(log.blockNumber);
+
+            if (type === "KICK") {
+                await getKickInformation(log, price);
+            } else if (type === "TEND") {
+                await getTendInformation(log, price);
+            } else if (type === "DEAL") {
+                await getDealInformation(log, price);
+            }
+            setLastBlock(log.blockNumber);
         });
 
         setSubscribed(true);
@@ -263,7 +280,7 @@ function Auctions() {
         <div className='settings'>
             <p onClick={() => saveData()}>save data</p>
             <p>&nbsp;|&nbsp;</p>
-            <p onClick={() => unsaveData()}>clear all save data</p>
+            <p onClick={() => unsaveData()}>clear all save data (block {lastBlock})</p>
             <p>&nbsp;|&nbsp;</p>
             {subscribed ? 
             <p onClick={() => unsubscribe()}>unsubscribe</p>
