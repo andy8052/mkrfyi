@@ -66,6 +66,8 @@ function Auctions() {
     const [auctionRecords, setAuctionRecords] = useState([]);
     const [auctionRecordsHist, setAuctionRecordsHist] = useLocalStorage('records',[]);
 
+    const [atRisk, setAtRisk] = useState(false);
+
  
     function getType(topic) {
         if (topic === TEND) {
@@ -93,7 +95,6 @@ function Auctions() {
         tab = tab.div(prec27).div(prec18).toNumber() / 1000;
 
         let auction = {'type':"KICK",'id':id, 'lot':lot, 'bid':bid, 'tab':tab, 'hash':log.transactionHash, 'block':log.blockNumber, 'price':price};
-        // let auction = <p>KICK @ block {log.blockNumber} | ID: {id} | lot: {lot} eth @ ${price}(${(lot*price).toFixed(2)}) | tab: {tab} dai | <a href={"https://etherscan.io/tx/" + log.transactionHash} target="_blank" rel="noopener noreferrer">link</a></p>
 
         let info = {'id':id,'lot':lot, 'bid':bid, 'tab':tab, 'last':"KICK"};
         let auctionRecordsTemp = auctionRecords;
@@ -127,7 +128,6 @@ function Auctions() {
         }
 
         let auction = {'type':"TEND",'id':id, 'lot':lot, 'bid':bid, 'hash':log.transactionHash, 'block':log.blockNumber, 'price':price, 'diff':diff};
-        // let auction = <p>TEND @ block {log.blockNumber} | ID: {id} | lot: {lot} eth @ ${price}(${(lot*price).toFixed(2)}) | bid: {bid} dai | rate: {diff}% | <a href={"https://etherscan.io/tx/" + log.transactionHash} target="_blank" rel="noopener noreferrer">link</a></p>
 
         setAuctionRecords(auctionRecordsTemp);
 
@@ -152,7 +152,6 @@ function Auctions() {
 
 
         let auction = {'type':"DEAL",'id':id, 'lot':lot, 'bid':bid, 'hash':log.transactionHash, 'block':log.blockNumber, 'price':price, 'diff':diff};
-        // let auction = <p>DEAL @ block {log.blockNumber} | ID: {id} | lot: {lot} eth @ ${price}(${(lot*price).toFixed(2)}) | winning bid: {bid} dai | rate: {diff}% | <a href={"https://etherscan.io/tx/" + log.transactionHash} target="_blank" rel="noopener noreferrer">link</a></p>
 
         setAuctionRecords(auctionRecordsTemp);
 
@@ -181,6 +180,7 @@ function Auctions() {
 
     function unsaveData() {
         window.localStorage.clear();
+        setLastBlockHist(0);
     }
 
     function subscribe() {
@@ -275,6 +275,14 @@ function Auctions() {
         }
     })
 
+    const risky = auctionRecords.map(function(auction){
+        if (auction && auction["last"] === "TEND") {
+            if (auction["diff"] && auction["diff"] < -49){
+                return <p>ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | last bid: {auction["bid"]} dai | rate: {auction["diff"]}% </p>
+            }
+        }
+    })
+
     return (
         <>
         <div className='settings'>
@@ -283,13 +291,22 @@ function Auctions() {
             <p onClick={() => unsaveData()}>clear all save data (block {lastBlockHist})</p>
             <p>&nbsp;|&nbsp;</p>
             {subscribed ? 
-            <p onClick={() => unsubscribe()}>unsubscribe</p>
-
-            :
-            <p onClick={() => subscribe()}>subscribe</p>
+                <p onClick={() => unsubscribe()}>unsubscribe</p>
+                :
+                <p onClick={() => subscribe()}>subscribe</p>
+            }
+            <p>&nbsp;|&nbsp;</p>
+            {atRisk ? 
+                <p onClick={() => setAtRisk(false)}>see auction events</p>
+                :
+                <p onClick={() => setAtRisk(true)}>see risky auctions</p>
             }
         </div>
-        <div>{auctionList}</div>
+        {atRisk ? 
+            <div>{risky}</div>
+            :
+            <div>{auctionList}</div>
+        }
         </>
     )
 }
