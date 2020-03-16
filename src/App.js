@@ -5,7 +5,7 @@ import Chief from './Chief.js';
 import Auctions from './Auctions.js';
 
 function App() {
-  const [page, setPage] = useState("LIQUIDITY");
+  const [page, setPage] = useState("AUCTIONS");
 
   return (
     <div className="App">
