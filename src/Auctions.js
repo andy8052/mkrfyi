@@ -179,6 +179,10 @@ function Auctions() {
         setAuctionRecordsHist(auctionRecords);
     }
 
+    function unsaveData() {
+        window.localStorage.clear();
+    }
+
     function subscribe() {
         const filterAll = {
             address: ETH_FLIP_ADDRESS
@@ -258,6 +262,8 @@ function Auctions() {
         <>
         <div className='settings'>
             <p onClick={() => saveData()}>save data</p>
+            <p>&nbsp;|&nbsp;</p>
+            <p onClick={() => unsaveData()}>clear all save data</p>
             <p>&nbsp;|&nbsp;</p>
             {subscribed ? 
             <p onClick={() => unsubscribe()}>unsubscribe</p>

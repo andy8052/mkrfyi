@@ -16,4 +16,5 @@
 div.settings {
   display: flex;
   flex-direction: row;
+  cursor: pointer;
 }
