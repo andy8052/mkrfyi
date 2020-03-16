@@ -240,11 +240,6 @@ function Auctions() {
 
     async function calcExpectedLoss() {
         let latestBlock = await provider.getBlockNumber();
-
-        // let blockInfo = await provider.getBlock(latestBlock);
-
-        // let timestamp = blockInfo.timestamp;
-
         let price = await getEthPrice(latestBlock);
         let lossExp = 0;
         for (let i = 0; i < auctionRecords.length; i++) {
@@ -307,11 +302,9 @@ function Auctions() {
         }
     })
 
-    const risky = auctionRecords.map(async function(auction){
-        
+    const risky = auctionRecords.map(function(auction){
         if (auction && auction["last"] === "TEND") {
             if (auction["diff"] && auction["diff"] < -33){
-                // let id = await flipContract.bids(Number(auction["id"]));
                 return <p>ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | last bid: {auction["bid"]} dai | rate: {auction["diff"]}% </p>
             }
         }
