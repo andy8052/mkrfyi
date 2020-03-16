@@ -66,6 +66,7 @@ function Auctions() {
     const [auctionRecords, setAuctionRecords] = useState([]);
     const [auctionRecordsHist, setAuctionRecordsHist] = useLocalStorage('records',[]);
 
+    const [pendLoss, setPendLoss] = useState(0);
     const [atRisk, setAtRisk] = useState(false);
 
  
@@ -176,6 +177,7 @@ function Auctions() {
         setLastBlockHist(lastBlock);
         alert("data saved up to block " + lastBlock);
         setAuctionRecordsHist(auctionRecords);
+        calcExpectedLoss();
     }
 
     function unsaveData() {
@@ -220,6 +222,16 @@ function Auctions() {
         provider.removeAllListeners(filterAll);
 
         setSubscribed(false);
+    }
+
+    function calcExpectedLoss() {
+        let lossExp = 0;
+        for (let i = 0; i < auctionRecords.length; i++) {
+            if (auctionRecords[i] && auctionRecords[i]["last"] === "TEND") {
+                lossExp += auctionRecords[i]["price"]*auctionRecords[i]["lot"] - auctionRecords[i]["bid"];
+            }
+        }
+        setPendLoss(lossExp);
     }
 
     useEffect(() => {
@@ -303,7 +315,10 @@ function Auctions() {
             }
         </div>
         {atRisk ? 
+            <>
+            <p onClick={() => calcExpectedLoss()}>update pending system loss: ${pendLoss.toFixed(2)}</p>
             <div>{risky}</div>
+            </>
             :
             <div>{auctionList}</div>
         }
