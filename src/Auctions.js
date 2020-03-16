@@ -280,7 +280,7 @@ function Auctions() {
         <div className='settings'>
             <p onClick={() => saveData()}>save data</p>
             <p>&nbsp;|&nbsp;</p>
-            <p onClick={() => unsaveData()}>clear all save data (block {lastBlock})</p>
+            <p onClick={() => unsaveData()}>clear all save data (block {lastBlockHist})</p>
             <p>&nbsp;|&nbsp;</p>
             {subscribed ? 
             <p onClick={() => unsubscribe()}>unsubscribe</p>
