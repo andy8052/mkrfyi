@@ -135,21 +135,21 @@ function Auctions() {
     }
 
     async function getDealInformation(log, price) {
-        let prec18 = ethers.utils.bigNumberify("100000000000000");
         let id = ethers.utils.bigNumberify(log.topics[2]).toString();
-        let lot = ethers.utils.bigNumberify(log.topics[3]).div(prec18).toNumber() / 10000;
 
         let auctionRecordsTemp = auctionRecords;
         if (auctionRecordsTemp[id] === undefined) {
-            let info = {'id':id,'lot':lot, 'last':"DEAL", 'price':price};
+            let info = {'id':id, 'last':"DEAL", 'price':price};
             auctionRecordsTemp[id] = info;
         } else {
             auctionRecordsTemp[id]["price"] = price;
             auctionRecordsTemp[id]["last"] = "DEAL";
         }
 
-        let bid = auctionRecordsTemp[id]["bid"] === undefined ? "no bidding history loaded" : auctionRecordsTemp[id]["bid"];
-        let diff = auctionRecordsTemp[id]["diff"] === undefined ? "no bidding history loaded" : auctionRecordsTemp[id]["diff"];
+        let bid = auctionRecordsTemp[id]["bid"] === undefined ? "no history loaded" : auctionRecordsTemp[id]["bid"];
+        let diff = auctionRecordsTemp[id]["diff"] === undefined ? "no history loaded" : auctionRecordsTemp[id]["diff"];
+        let lot = auctionRecordsTemp[id]["lot"] === undefined ? "no history loaded" : auctionRecordsTemp[id]["lot"];
+
 
         let auction = {'type':"DEAL",'id':id, 'lot':lot, 'bid':bid, 'hash':log.transactionHash, 'block':log.blockNumber, 'price':price, 'diff':diff};
         // let auction = <p>DEAL @ block {log.blockNumber} | ID: {id} | lot: {lot} eth @ ${price}(${(lot*price).toFixed(2)}) | winning bid: {bid} dai | rate: {diff}% | <a href={"https://etherscan.io/tx/" + log.transactionHash} target="_blank" rel="noopener noreferrer">link</a></p>
