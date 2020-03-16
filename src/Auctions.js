@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { waitForElementToBeRemoved } from '@testing-library/react';
 
 const provider = ethers.getDefaultProvider();
 
@@ -9,6 +8,9 @@ const OSM_ADDRESS = "0x81FE72B5A8d1A857d176C3E7d5Bd2679A9B85763";
 const CDP_MANAGER_ADDRESS = "0x5ef30b9986345249bc32d8928B7ee64DE9435E39";
 const CAT_ADDRESS = "0x78F2c2AF65126834c51822F56Be0d7469D7A523E";
 
+let flipABI = [
+    "function bids(uint256) public view returns(uint256, uint256, address, uint48, uint48, address, address, uint256)"
+]
 let osmABI = [
     "event LogValue(bytes32 val)"
 ];
@@ -18,6 +20,7 @@ const DENT = "0x5ff3a38200000000000000000000000000000000000000000000000000000000
 const DEAL = "0xc959c42b00000000000000000000000000000000000000000000000000000000";
 const TICK = "0xfc7b6aee00000000000000000000000000000000000000000000000000000000";
 
+const flipContract = new ethers.Contract(ETH_FLIP_ADDRESS, flipABI, provider);
 const osmContract = new ethers.Contract(OSM_ADDRESS, osmABI, provider);
 
 function useLocalStorage(key, initialValue) {
@@ -110,7 +113,8 @@ function Auctions() {
         let prec27 = ethers.utils.bigNumberify("1000000000000000000000000000");
         let id = ethers.utils.bigNumberify(log.topics[2]).toString();
         let lot = ethers.utils.bigNumberify(log.topics[3]).div(prec18).toNumber() / 10000;
-        let bidHex = "0x" + log.data.slice(289, -248);
+
+        let bidHex = "0x" + log.data.slice(288, -248);
         let bid = ethers.utils.bigNumberify(bidHex).div(prec27).div(prec18).toNumber() / 10000;
         let paid = bid / lot;
 
@@ -171,6 +175,18 @@ function Auctions() {
         return price;
     }
 
+    // async function getBidInfo(id) {
+    //     let prec18 = ethers.utils.bigNumberify("10000000000000000");
+
+    //     let filter = osmContract.filters.LogValue();
+    //     filter.fromBlock = block - 600;
+    //     filter.toBlock = block;
+
+    //     let logs = await provider.getLogs(filter);
+    //     let price = ethers.utils.bigNumberify(logs[logs.length - 1].data).div(prec18) / 100;
+    //     return price;
+    // }
+
     function saveData() {
         setAuctionHist(auctions);
         setLastBlockHist(lastBlock);
@@ -224,6 +240,11 @@ function Auctions() {
 
     async function calcExpectedLoss() {
         let latestBlock = await provider.getBlockNumber();
+
+        // let blockInfo = await provider.getBlock(latestBlock);
+
+        // let timestamp = blockInfo.timestamp;
+
         let price = await getEthPrice(latestBlock);
         let lossExp = 0;
         for (let i = 0; i < auctionRecords.length; i++) {
@@ -286,9 +307,11 @@ function Auctions() {
         }
     })
 
-    const risky = auctionRecords.map(function(auction){
+    const risky = auctionRecords.map(async function(auction){
+        
         if (auction && auction["last"] === "TEND") {
-            if (auction["diff"] && auction["diff"] < -49){
+            if (auction["diff"] && auction["diff"] < -33){
+                // let id = await flipContract.bids(Number(auction["id"]));
                 return <p>ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | last bid: {auction["bid"]} dai | rate: {auction["diff"]}% </p>
             }
         }
