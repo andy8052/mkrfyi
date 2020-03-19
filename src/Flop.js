@@ -282,11 +282,11 @@ function Flop() {
 
     const auctionList = auctions.map(function(auction){
         if (auction["type"] === "KICK") {
-            return <p>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
+            return <p>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
         } else if (auction["type"] === "DEAL") {
-            return <p>DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | winning bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
+            return <p>DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | winning bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
         } else if (auction["type"] === "DENT") {
-            return <p>DENT @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
+            return <p>DENT @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
         } 
     })
 
