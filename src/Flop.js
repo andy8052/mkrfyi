@@ -3,12 +3,12 @@ import { ethers } from 'ethers';
 
 const provider = ethers.getDefaultProvider();
 
-const ETH_FLIP_ADDRESS = "0xd8a04f5412223f513dc55f839574430f5ec15531";
-const OSM_ADDRESS = "0x81FE72B5A8d1A857d176C3E7d5Bd2679A9B85763";
-const CDP_MANAGER_ADDRESS = "0x5ef30b9986345249bc32d8928B7ee64DE9435E39";
-const CAT_ADDRESS = "0x78F2c2AF65126834c51822F56Be0d7469D7A523E";
+const FLOP_ADDRESS = "0x4D95A049d5B0b7d32058cd3F2163015747522e99";
+const MEDIANIZER_ADDRESS = "0x99041F808D598B782D5a3e498681C2452A31da08";
+const VOW_ADDRESS = "0xA950524441892A31ebddF91d3cEEFa04Bf454466";
+const VAT_ADDRESS = "0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B";
 
-let flipABI = [
+let flopABI = [
     "function bids(uint256) public view returns(uint256, uint256, address, uint48, uint48, address, address, uint256)"
 ]
 let osmABI = [
@@ -19,9 +19,12 @@ const TEND = "0x4b43ed1200000000000000000000000000000000000000000000000000000000
 const DENT = "0x5ff3a38200000000000000000000000000000000000000000000000000000000";
 const DEAL = "0xc959c42b00000000000000000000000000000000000000000000000000000000";
 const TICK = "0xfc7b6aee00000000000000000000000000000000000000000000000000000000";
+const FILE = "0x29ae811400000000000000000000000000000000000000000000000000000000";
+const DENY = "0x9c52a7f100000000000000000000000000000000000000000000000000000000";
+const RELY = "0x65fae35e00000000000000000000000000000000000000000000000000000000";
 
-const flipContract = new ethers.Contract(ETH_FLIP_ADDRESS, flipABI, provider);
-const osmContract = new ethers.Contract(OSM_ADDRESS, osmABI, provider);
+const flopCOntract = new ethers.Contract(FLOP_ADDRESS, flopABI, provider);
+const osmContract = new ethers.Contract(MEDIANIZER_ADDRESS, osmABI, provider);
 
 function useLocalStorage(key, initialValue) {
     // State to store our value
@@ -59,7 +62,7 @@ function useLocalStorage(key, initialValue) {
     return [storedValue, setValue];
 }
 
-function Auctions() {
+function Flop() {
     const [auctions, setAuctions] = useState([]);
     const [auctionHist, setAuctionHist] = useLocalStorage('auctions', []);
     const [lastBlock, setLastBlock] = useState(0);
@@ -69,38 +72,36 @@ function Auctions() {
     const [auctionRecords, setAuctionRecords] = useState([]);
     const [auctionRecordsHist, setAuctionRecordsHist] = useLocalStorage('records',[]);
 
-    const [pendLoss, setPendLoss] = useState(0);
+
     const [atRisk, setAtRisk] = useState(false);
 
  
     function getType(topic) {
-        if (topic === TEND) {
-            return "TEND";
-        } else if (topic === DENT) {
+        if (topic === DENT) {
             return "DENT";
         } else if (topic === DEAL) {
             return "DEAL";
         } else if (topic === TICK) {
             return "TICK";
+        } else {
+            console.log("topic unknown " + topic);
         }
     }
 
     async function getKickInformation(log, price) {
         let prec18 = ethers.utils.bigNumberify("100000000000000");
-        let prec27 = ethers.utils.bigNumberify("1000000000000000000000000000");
+        // let prec27 = ethers.utils.bigNumberify("1000000000000000000000000000");
 
         let id = ethers.utils.bigNumberify(ethers.utils.hexDataSlice(log.data, 0, 32)).toString();
         let bid = ethers.utils.bigNumberify(ethers.utils.hexDataSlice(log.data, 32, 32)).toString();
         let lot = ethers.utils.bigNumberify(ethers.utils.hexDataSlice(log.data, 64, 32));
-        let tab = ethers.utils.bigNumberify(ethers.utils.hexDataSlice(log.data, 96));
         
         lot = lot.div(prec18);
         lot = lot.toNumber() / 10000;
-        tab = tab.div(prec27).div(prec18).toNumber() / 1000;
 
-        let auction = {'type':"KICK",'id':id, 'lot':lot, 'bid':bid, 'tab':tab, 'hash':log.transactionHash, 'block':log.blockNumber, 'price':price};
+        let auction = {'type':"KICK",'id':id, 'lot':lot, 'bid':bid, 'hash':log.transactionHash, 'block':log.blockNumber, 'price':price};
 
-        let info = {'id':id,'lot':lot, 'bid':bid, 'tab':tab, 'last':"KICK"};
+        let info = {'id':id,'lot':lot, 'bid':bid, 'last':"KICK"};
         let auctionRecordsTemp = auctionRecords;
         auctionRecordsTemp[id] = info;
         setAuctionRecords(auctionRecordsTemp);
@@ -108,7 +109,7 @@ function Auctions() {
         setAuctions(auctions => [auction,...auctions]);
     }
 
-    async function getTendInformation(log, price) {
+    async function getDentInformation(log, price) {
         let prec18 = ethers.utils.bigNumberify("100000000000000");
         let prec27 = ethers.utils.bigNumberify("1000000000000000000000000000");
         let id = ethers.utils.bigNumberify(log.topics[2]).toString();
@@ -122,17 +123,17 @@ function Auctions() {
 
         let auctionRecordsTemp = auctionRecords;
         if (auctionRecordsTemp[id] === undefined) {
-            let info = {'id':id,'lot':lot, 'bid':bid, 'last':"TEND", 'price': price, 'paid':paid};
+            let info = {'id':id,'lot':lot, 'bid':bid, 'last':"DENT", 'price': price, 'paid':paid};
             auctionRecordsTemp[id] = info;
         } else {
             auctionRecordsTemp[id]["diff"] = diff;
             auctionRecordsTemp[id]["paid"] = paid;
             auctionRecordsTemp[id]["price"] = price;
             auctionRecordsTemp[id]["bid"] = bid;
-            auctionRecordsTemp[id]["last"] = "TEND";
+            auctionRecordsTemp[id]["last"] = "DENT";
         }
 
-        let auction = {'type':"TEND",'id':id, 'lot':lot, 'bid':bid, 'hash':log.transactionHash, 'block':log.blockNumber, 'price':price, 'diff':diff};
+        let auction = {'type':"DENT",'id':id, 'lot':lot, 'bid':bid, 'hash':log.transactionHash, 'block':log.blockNumber, 'price':price, 'diff':diff};
 
         setAuctionRecords(auctionRecordsTemp);
 
@@ -192,7 +193,6 @@ function Auctions() {
         setLastBlockHist(lastBlock);
         alert("data saved up to block " + lastBlock);
         setAuctionRecordsHist(auctionRecords);
-        calcExpectedLoss();
     }
 
     function unsaveData() {
@@ -202,12 +202,12 @@ function Auctions() {
 
     function subscribe() {
         const filterAll = {
-            address: ETH_FLIP_ADDRESS
+            address: FLOP_ADDRESS
         }
 
         provider.on(filterAll, async (log) => {
             let type;
-            if (log.topics.length === 3){
+            if (log.topics.length === 2){
                 type = "KICK";
             } else {
                 type = getType(log.topics[0]);
@@ -217,10 +217,10 @@ function Auctions() {
 
             if (type === "KICK") {
                 await getKickInformation(log, price);
-            } else if (type === "TEND") {
-                await getTendInformation(log, price);
             } else if (type === "DEAL") {
                 await getDealInformation(log, price);
+            } else if (type === "DENT") {
+                await getDentInformation(log, price);
             }
             setLastBlock(log.blockNumber);
         });
@@ -230,24 +230,12 @@ function Auctions() {
 
     function unsubscribe() {
         const filterAll = {
-            address: ETH_FLIP_ADDRESS
+            address: FLOP_ADDRESS
         }
 
         provider.removeAllListeners(filterAll);
 
         setSubscribed(false);
-    }
-
-    async function calcExpectedLoss() {
-        let latestBlock = await provider.getBlockNumber();
-        let price = await getEthPrice(latestBlock);
-        let lossExp = 0;
-        for (let i = 0; i < auctionRecords.length; i++) {
-            if (auctionRecords[i] && auctionRecords[i]["last"] === "TEND") {
-                lossExp += price*auctionRecords[i]["lot"] - auctionRecords[i]["bid"];
-            }
-        }
-        setPendLoss(lossExp);
     }
 
     useEffect(() => {
@@ -258,7 +246,7 @@ function Auctions() {
             setLastBlock(block);
 
             const filterAll = {
-                address: ETH_FLIP_ADDRESS,
+                address: FLOP_ADDRESS,
                 fromBlock: block,
                 toBlock: "latest"
             }
@@ -270,7 +258,7 @@ function Auctions() {
 
             for (const log of logs) {
                 let type;
-                if (log.topics.length === 3){
+                if (log.topics.length === 2){
                     type = "KICK";
                 } else {
                     type = getType(log.topics[0]);
@@ -280,10 +268,10 @@ function Auctions() {
 
                 if (type === "KICK") {
                     await getKickInformation(log, price);
-                } else if (type === "TEND") {
-                    await getTendInformation(log, price);
                 } else if (type === "DEAL") {
                     await getDealInformation(log, price);
+                } else if (type === "DENT") {
+                    await getDentInformation(log, price);
                 }
                 setLastBlock(log.blockNumber);
             }
@@ -294,20 +282,12 @@ function Auctions() {
 
     const auctionList = auctions.map(function(auction){
         if (auction["type"] === "KICK") {
-            return <p>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | tab: {auction["tab"]} dai | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
-        } else if (auction["type"] === "TEND") {
-            return <p>TEND @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
+            return <p>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
         } else if (auction["type"] === "DEAL") {
             return <p>DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | winning bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
-        }
-    })
-
-    const risky = auctionRecords.map(function(auction){
-        if (auction && auction["last"] === "TEND") {
-            if (auction["diff"] && auction["diff"] < -33){
-                return <p>ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | last bid: {auction["bid"]} dai | rate: {auction["diff"]}% </p>
-            }
-        }
+        } else if (auction["type"] === "DENT") {
+            return <p>DENT @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
+        } 
     })
 
     return (
@@ -322,23 +302,10 @@ function Auctions() {
                 :
                 <p onClick={() => subscribe()}>subscribe</p>
             }
-            <p>&nbsp;|&nbsp;</p>
-            {atRisk ? 
-                <p onClick={() => setAtRisk(false)}>see auction events</p>
-                :
-                <p onClick={() => setAtRisk(true)}>see risky auctions</p>
-            }
         </div>
-        {atRisk ? 
-            <>
-            <p onClick={() => calcExpectedLoss()}>update theoretical system loss: ${pendLoss.toFixed(2)}</p>
-            <div>{risky}</div>
-            </>
-            :
-            <div>{auctionList}</div>
-        }
+        <div>{auctionList}</div>
         </>
     )
 }
 
-export default Auctions;
+export default Flop;

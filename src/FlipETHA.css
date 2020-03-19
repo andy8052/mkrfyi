@@ -1,0 +1,16 @@
+div.settings {
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+}
+
+div.eventContainer {
+    flex-direction: column;
+    width: 90%;
+}
+
+div.event {
+    display: flex;
+    justify-content: left;
+    margin-bottom: 2px;
+}
