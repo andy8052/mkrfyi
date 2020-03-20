@@ -73,6 +73,7 @@ function Flop() {
     const [auctionRecordsHist, setAuctionRecordsHist] = useLocalStorage('records',[]);
 
     const [active, setActive] = useState(0);
+    const [onlyDealt, setOnlyDealt] = useState(false);
     const [atRisk, setAtRisk] = useState(false);
 
  
@@ -293,8 +294,12 @@ function Flop() {
         }
     }
 
+    function updateOnlyDealt() {
+        onlyDealt ? setOnlyDealt(false) : setOnlyDealt(true);
+    }
+
     const auctionList = auctions.map(function(auction){
-        if (active === 0 || active === auction["id"]){
+        if ((active === 0 || active === auction["id"]) && !onlyDealt){
             if (auction["type"] === "KICK") {
                 return <div className="event" onClick={() => updateActive(auction["id"])}>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
             } else if (auction["type"] === "DEAL") {
@@ -302,6 +307,8 @@ function Flop() {
             } else if (auction["type"] === "DENT") {
                 return <div className="event" onClick={() => updateActive(auction["id"])}>DENT @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | auction price: ${(auction["bid"]/auction["lot"]).toFixed(2)}/mkr | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
             } 
+        } else if (onlyDealt && auction["type"] === "DEAL") {
+            return <div className="event" >DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | auction price: ${(auction["bid"]/auction["lot"]).toFixed(2)}/mkr | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
         }
     })
 
@@ -317,6 +324,8 @@ function Flop() {
                 :
                 <p onClick={() => subscribe()}>subscribe</p>
             }
+            <p>&nbsp;|&nbsp;</p>
+            <p onClick={() => updateOnlyDealt()}>finalized flops</p>
         </div>
         <div>click on a row to see only that ID's events</div>
         <div>{auctionList}</div>
