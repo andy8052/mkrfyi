@@ -72,7 +72,7 @@ function Flop() {
     const [auctionRecords, setAuctionRecords] = useState([]);
     const [auctionRecordsHist, setAuctionRecordsHist] = useLocalStorage('records',[]);
 
-
+    const [active, setActive] = useState(0);
     const [atRisk, setAtRisk] = useState(false);
 
  
@@ -285,14 +285,24 @@ function Flop() {
         getLogs();
     }, []);
 
+    function updateActive(id) {
+        if (active === id) {
+            setActive(0);
+        } else {
+            setActive(id);
+        }
+    }
+
     const auctionList = auctions.map(function(auction){
-        if (auction["type"] === "KICK") {
-            return <p>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
-        } else if (auction["type"] === "DEAL") {
-            return <p>DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | auction price: ${(auction["bid"]/auction["lot"]).toFixed(2)}/mkr | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
-        } else if (auction["type"] === "DENT") {
-            return <p>DENT @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | auction price: ${(auction["bid"]/auction["lot"]).toFixed(2)}/mkr | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
-        } 
+        if (active === 0 || active === auction["id"]){
+            if (auction["type"] === "KICK") {
+                return <p onClick={() => updateActive(auction["id"])}>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
+            } else if (auction["type"] === "DEAL") {
+                return <p onClick={() => updateActive(auction["id"])}>DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | auction price: ${(auction["bid"]/auction["lot"]).toFixed(2)}/mkr | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
+            } else if (auction["type"] === "DENT") {
+                return <p onClick={() => updateActive(auction["id"])}>DENT @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | auction price: ${(auction["bid"]/auction["lot"]).toFixed(2)}/mkr | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
+            } 
+        }
     })
 
     return (
