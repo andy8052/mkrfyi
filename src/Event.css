@@ -1,0 +1,11 @@
+div.settings {
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+}
+
+div.event {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 3px;
+}

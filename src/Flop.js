@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
+import './Event.css';
 
 const provider = ethers.getDefaultProvider();
 
@@ -15,7 +16,6 @@ let osmABI = [
     "event LogValue(bytes32 val)"
 ];
 
-const TEND = "0x4b43ed1200000000000000000000000000000000000000000000000000000000";
 const DENT = "0x5ff3a38200000000000000000000000000000000000000000000000000000000";
 const DEAL = "0xc959c42b00000000000000000000000000000000000000000000000000000000";
 const TICK = "0xfc7b6aee00000000000000000000000000000000000000000000000000000000";
@@ -296,11 +296,11 @@ function Flop() {
     const auctionList = auctions.map(function(auction){
         if (active === 0 || active === auction["id"]){
             if (auction["type"] === "KICK") {
-                return <p onClick={() => updateActive(auction["id"])}>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
+                return <div className="event" onClick={() => updateActive(auction["id"])}>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
             } else if (auction["type"] === "DEAL") {
-                return <p onClick={() => updateActive(auction["id"])}>DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | auction price: ${(auction["bid"]/auction["lot"]).toFixed(2)}/mkr | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
+                return <div className="event" onClick={() => updateActive(auction["id"])}>DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | auction price: ${(auction["bid"]/auction["lot"]).toFixed(2)}/mkr | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
             } else if (auction["type"] === "DENT") {
-                return <p onClick={() => updateActive(auction["id"])}>DENT @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | auction price: ${(auction["bid"]/auction["lot"]).toFixed(2)}/mkr | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
+                return <div className="event" onClick={() => updateActive(auction["id"])}>DENT @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | auction price: ${(auction["bid"]/auction["lot"]).toFixed(2)}/mkr | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
             } 
         }
     })

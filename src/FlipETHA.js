@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-// import './FlipETHA.css';
+import './Event.css';
 
 const provider = ethers.getDefaultProvider();
 
@@ -212,18 +212,6 @@ function FlipETHA() {
         return price;
     }
 
-    // async function getBidInfo(id) {
-    //     let prec18 = ethers.utils.bigNumberify("10000000000000000");
-
-    //     let filter = osmContract.filters.LogValue();
-    //     filter.fromBlock = block - 600;
-    //     filter.toBlock = block;
-
-    //     let logs = await provider.getLogs(filter);
-    //     let price = ethers.utils.bigNumberify(logs[logs.length - 1].data).div(prec18) / 100;
-    //     return price;
-    // }
-
     function saveData() {
         setAuctionHist(auctions);
         setLastBlockHist(lastBlock);
@@ -344,13 +332,13 @@ function FlipETHA() {
 
     const auctionList = auctions.map(function(auction){
         if (auction["type"] === "KICK") {
-            return <div className="event" onClick={() => updateActive(auction["id"])}>>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | tab: {auction["tab"]} dai | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
+            return <div className="event" onClick={() => updateActive(auction["id"])}>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | tab: {auction["tab"]} dai | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
         } else if (auction["type"] === "TEND") {
-            return <div className="event" onClick={() => updateActive(auction["id"])}>>TEND @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
+            return <div className="event" onClick={() => updateActive(auction["id"])}>TEND @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
         } else if (auction["type"] === "DEAL") {
-            return <div className="event" onClick={() => updateActive(auction["id"])}>>DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | winning bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
+            return <div className="event" onClick={() => updateActive(auction["id"])}>DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | winning bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
         } else if (auction["type"] === "DENT") {
-            return <div className="event" onClick={() => updateActive(auction["id"])}>>DENT @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
+            return <div className="event" onClick={() => updateActive(auction["id"])}>DENT @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
         } 
     })
 
