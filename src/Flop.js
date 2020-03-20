@@ -73,7 +73,8 @@ function Flop() {
     const [auctionRecordsHist, setAuctionRecordsHist] = useLocalStorage('records',[]);
 
     const [active, setActive] = useState(0);
-    const [onlyDealt, setOnlyDealt] = useState(false);
+    const [onlyDealt, setOnlyDealt] = useState("finalized");
+    const [finished, setFinished] = useState(0);
     const [atRisk, setAtRisk] = useState(false);
 
  
@@ -166,7 +167,6 @@ function Flop() {
         let auction = {'type':"DEAL",'id':id, 'lot':lot, 'bid':bid, 'hash':log.transactionHash, 'block':log.blockNumber, 'price':price, 'diff':diff};
 
         setAuctionRecords(auctionRecordsTemp);
-
         setAuctions(auctions => [auction,...auctions]);
     }
 
@@ -224,6 +224,7 @@ function Flop() {
             if (type === "KICK") {
                 await getKickInformation(log, price);
             } else if (type === "DEAL") {
+                setFinished(finished + 1);
                 await getDealInformation(log, price);
             } else if (type === "DENT") {
                 await getDentInformation(log, price);
@@ -261,7 +262,7 @@ function Flop() {
 
             setAuctions(auctionHist);
             setAuctionRecords(auctionRecordsHist);
-
+            let deals = 0;
             for (const log of logs) {
                 let type;
                 if (log.topics.length === 2){
@@ -275,12 +276,15 @@ function Flop() {
                 if (type === "KICK") {
                     await getKickInformation(log, price);
                 } else if (type === "DEAL") {
+                    deals += 1;
                     await getDealInformation(log, price);
                 } else if (type === "DENT") {
                     await getDentInformation(log, price);
                 }
                 setLastBlock(log.blockNumber);
             }
+
+            setFinished(deals);
         }
     
         getLogs();
@@ -295,11 +299,11 @@ function Flop() {
     }
 
     function updateOnlyDealt() {
-        onlyDealt ? setOnlyDealt(false) : setOnlyDealt(true);
+        onlyDealt === "finalized" ? setOnlyDealt("all") : setOnlyDealt("finalized");
     }
 
     const auctionList = auctions.map(function(auction){
-        if ((active === 0 || active === auction["id"]) && !onlyDealt){
+        if ((active === 0 || active === auction["id"]) && onlyDealt === "finalized"){
             if (auction["type"] === "KICK") {
                 return <div className="event" onClick={() => updateActive(auction["id"])}>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
             } else if (auction["type"] === "DEAL") {
@@ -307,7 +311,7 @@ function Flop() {
             } else if (auction["type"] === "DENT") {
                 return <div className="event" onClick={() => updateActive(auction["id"])}>DENT @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | auction price: ${(auction["bid"]/auction["lot"]).toFixed(2)}/mkr | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
             } 
-        } else if (onlyDealt && auction["type"] === "DEAL") {
+        } else if (onlyDealt === "all" && auction["type"] === "DEAL") {
             return <div className="event" >DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | auction price: ${(auction["bid"]/auction["lot"]).toFixed(2)}/mkr | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
         }
     })
@@ -325,9 +329,13 @@ function Flop() {
                 <p onClick={() => subscribe()}>subscribe</p>
             }
             <p>&nbsp;|&nbsp;</p>
-            <p onClick={() => updateOnlyDealt()}>finalized flops</p>
+            <p onClick={() => updateOnlyDealt()}>{onlyDealt} flops</p>
         </div>
-        <div>click on a row to see only that ID's events</div>
+        {onlyDealt === "all" ?
+            <div>total finished flops: {finished}</div>
+            :
+            <div>click on a row to see only that ID's events</div>
+        }
         <div>{auctionList}</div>
         </>
     )
