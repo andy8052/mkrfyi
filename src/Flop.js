@@ -126,6 +126,7 @@ function Flop() {
             let info = {'id':id,'lot':lot, 'bid':bid, 'last':"DENT", 'price': price, 'paid':paid};
             auctionRecordsTemp[id] = info;
         } else {
+            auctionRecordsTemp[id]["lot"] = lot;
             auctionRecordsTemp[id]["diff"] = diff;
             auctionRecordsTemp[id]["paid"] = paid;
             auctionRecordsTemp[id]["price"] = price;
@@ -144,16 +145,20 @@ function Flop() {
         let id = ethers.utils.bigNumberify(log.topics[2]).toString();
 
         let auctionRecordsTemp = auctionRecords;
+
+        let diff = (((auctionRecordsTemp[id]["paid"] / price) - 1) * 100).toFixed(2);
+
         if (auctionRecordsTemp[id] === undefined) {
             let info = {'id':id, 'last':"DEAL", 'price':price};
             auctionRecordsTemp[id] = info;
         } else {
+            auctionRecordsTemp[id]["diff"] = diff;
             auctionRecordsTemp[id]["price"] = price;
             auctionRecordsTemp[id]["last"] = "DEAL";
         }
 
         let bid = auctionRecordsTemp[id]["bid"] === undefined ? "no history loaded" : auctionRecordsTemp[id]["bid"];
-        let diff = auctionRecordsTemp[id]["diff"] === undefined ? "no history loaded" : auctionRecordsTemp[id]["diff"];
+        // let diff = auctionRecordsTemp[id]["diff"] === undefined ? "no history loaded" : auctionRecordsTemp[id]["diff"];
         let lot = auctionRecordsTemp[id]["lot"] === undefined ? "no history loaded" : auctionRecordsTemp[id]["lot"];
 
 
@@ -284,7 +289,7 @@ function Flop() {
         if (auction["type"] === "KICK") {
             return <p>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
         } else if (auction["type"] === "DEAL") {
-            return <p>DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | winning bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
+            return <p>DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | auction price: ${(auction["bid"]/auction["lot"]).toFixed(2)}/mkr | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
         } else if (auction["type"] === "DENT") {
             return <p>DENT @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} mkr @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | auction price: ${(auction["bid"]/auction["lot"]).toFixed(2)}/mkr | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></p>
         } 
