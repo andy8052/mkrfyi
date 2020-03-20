@@ -318,6 +318,7 @@ function Flop() {
                 <p onClick={() => subscribe()}>subscribe</p>
             }
         </div>
+        <div>click on a row to see only that ID's events</div>
         <div>{auctionList}</div>
         </>
     )

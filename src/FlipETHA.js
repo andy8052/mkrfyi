@@ -381,6 +381,7 @@ function FlipETHA() {
                 <p onClick={() => setAtRisk(true)}>see risky auctions</p>
             }
         </div>
+        <div>click on a row to see only that ID's events</div>
         {atRisk ? 
             <>
             <p onClick={() => calcExpectedLoss()}>update theoretical system loss: ${pendLoss.toFixed(2)}</p>
