@@ -376,7 +376,7 @@ function FlipBATA() {
             <div>{risky}</div>
             </>
             :
-            <div className="eventContainer">{auctionList}</div>
+            <div className="events">{auctionList}</div>
         }
         </>
     )
