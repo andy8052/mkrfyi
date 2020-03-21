@@ -4,10 +4,8 @@ import './Event.css';
 
 const provider = ethers.getDefaultProvider();
 
-const ETH_FLIP_ADDRESS = "0xd8a04f5412223f513dc55f839574430f5ec15531";
-const OSM_ADDRESS = "0x81FE72B5A8d1A857d176C3E7d5Bd2679A9B85763";
-const CDP_MANAGER_ADDRESS = "0x5ef30b9986345249bc32d8928B7ee64DE9435E39";
-const CAT_ADDRESS = "0x78F2c2AF65126834c51822F56Be0d7469D7A523E";
+const BAT_FLIP_ADDRESS = "0xaA745404d55f88C108A28c86abE7b5A1E7817c07";
+const OSM_ADDRESS = "0xB4eb54AF9Cc7882DF0121d26c5b97E802915ABe6";
 
 let flipABI = [
     "function bids(uint256) public view returns(uint256, uint256, address, uint48, uint48, address, address, uint256)"
@@ -21,7 +19,7 @@ const DENT = "0x5ff3a38200000000000000000000000000000000000000000000000000000000
 const DEAL = "0xc959c42b00000000000000000000000000000000000000000000000000000000";
 const TICK = "0xfc7b6aee00000000000000000000000000000000000000000000000000000000";
 
-const flipContract = new ethers.Contract(ETH_FLIP_ADDRESS, flipABI, provider);
+const flipContract = new ethers.Contract(BAT_FLIP_ADDRESS, flipABI, provider);
 const osmContract = new ethers.Contract(OSM_ADDRESS, osmABI, provider);
 
 function useLocalStorage(key, initialValue) {
@@ -60,7 +58,7 @@ function useLocalStorage(key, initialValue) {
     return [storedValue, setValue];
 }
 
-function FlipETHA() {
+function FlipBATA() {
     const [auctions, setAuctions] = useState([]);
     const [auctionHist, setAuctionHist] = useLocalStorage('auctions', []);
     const [lastBlock, setLastBlock] = useState(0);
@@ -200,7 +198,7 @@ function FlipETHA() {
         setAuctions(auctions => [auction,...auctions]);
     }
 
-    async function getEthPrice(block) {
+    async function getBATPrice(block) {
         let prec18 = ethers.utils.bigNumberify("10000000000000000");
 
         let filter = osmContract.filters.LogValue();
@@ -227,7 +225,7 @@ function FlipETHA() {
 
     function subscribe() {
         const filterAll = {
-            address: ETH_FLIP_ADDRESS
+            address: BAT_FLIP_ADDRESS
         }
 
         provider.on(filterAll, async (log) => {
@@ -238,7 +236,7 @@ function FlipETHA() {
                 type = getType(log.topics[0]);
             }
 
-            let price = await getEthPrice(log.blockNumber);
+            let price = await getBATPrice(log.blockNumber);
 
             if (type === "KICK") {
                 await getKickInformation(log, price);
@@ -257,7 +255,7 @@ function FlipETHA() {
 
     function unsubscribe() {
         const filterAll = {
-            address: ETH_FLIP_ADDRESS
+            address: BAT_FLIP_ADDRESS
         }
 
         provider.removeAllListeners(filterAll);
@@ -267,7 +265,7 @@ function FlipETHA() {
 
     async function calcExpectedLoss() {
         let latestBlock = await provider.getBlockNumber();
-        let price = await getEthPrice(latestBlock);
+        let price = await getBATPrice(latestBlock);
         let lossExp = 0;
         for (let i = 0; i < auctionRecords.length; i++) {
             if (auctionRecords[i] && auctionRecords[i]["last"] === "TEND") {
@@ -280,12 +278,12 @@ function FlipETHA() {
     useEffect(() => {
         async function getLogs() {
             let currentBlock = await provider.getBlockNumber();
-            let block = lastBlockHist === 0 ? currentBlock - 8000 : lastBlockHist + 1;
+            let block = lastBlockHist === 0 ? currentBlock - 50000 : lastBlockHist + 1;
 
             setLastBlock(block);
 
             const filterAll = {
-                address: ETH_FLIP_ADDRESS,
+                address: BAT_FLIP_ADDRESS,
                 fromBlock: block,
                 toBlock: "latest"
             }
@@ -304,7 +302,7 @@ function FlipETHA() {
                     console.log(type)
                 }
 
-                let price = await getEthPrice(log.blockNumber);
+                let price = await getBATPrice(log.blockNumber);
 
                 if (type === "KICK") {
                     await getKickInformation(log, price);
@@ -333,13 +331,13 @@ function FlipETHA() {
     const auctionList = auctions.map(function(auction){
         if (active === 0 || active === auction["id"]) {
             if (auction["type"] === "KICK") {
-                return <div className="event" onClick={() => updateActive(auction["id"])}>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | tab: {auction["tab"]} dai | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
+                return <div className="event" onClick={() => updateActive(auction["id"])}>KICK @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} bat @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | tab: {auction["tab"]} dai | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
             } else if (auction["type"] === "TEND") {
-                return <div className="event" onClick={() => updateActive(auction["id"])}>TEND @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
+                return <div className="event" onClick={() => updateActive(auction["id"])}>TEND @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} bat @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
             } else if (auction["type"] === "DEAL") {
-                return <div className="event" onClick={() => updateActive(auction["id"])}>DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | winning bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
+                return <div className="event" onClick={() => updateActive(auction["id"])}>DEAL @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} bat @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | winning bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
             } else if (auction["type"] === "DENT") {
-                return <div className="event" onClick={() => updateActive(auction["id"])}>DENT @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
+                return <div className="event" onClick={() => updateActive(auction["id"])}>DENT @ block {auction["block"]} | ID: {auction["id"]} | lot: {auction["lot"]} bat @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | bid: {auction["bid"]} dai | rate: {auction["diff"]}% | <a href={"https://etherscan.io/tx/" + auction["hash"]} target="_blank" rel="noopener noreferrer">link</a></div>
             } 
         }
     })
@@ -347,7 +345,7 @@ function FlipETHA() {
     const risky = auctionRecords.map(function(auction){
         if (auction && auction["last"] === "TEND") {
             if (auction["diff"] && auction["diff"] < -33){
-                return <p>ID: {auction["id"]} | lot: {auction["lot"]} eth @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | last bid: {auction["bid"]} dai | rate: {auction["diff"]}% </p>
+                return <p>ID: {auction["id"]} | lot: {auction["lot"]} bat @ ${auction["price"]}(${(auction["lot"]*auction["price"]).toFixed(2)}) | last bid: {auction["bid"]} dai | rate: {auction["diff"]}% </p>
             }
         }
     })
@@ -384,4 +382,4 @@ function FlipETHA() {
     )
 }
 
-export default FlipETHA;
+export default FlipBATA;

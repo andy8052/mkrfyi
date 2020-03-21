@@ -4,8 +4,13 @@ div.settings {
   cursor: pointer;
 }
 
+div.events {
+    margin-top: 10px;
+}
+
 div.event {
     display: flex;
+    font-size: medium;
     justify-content: center;
     margin-bottom: 4px;
 }

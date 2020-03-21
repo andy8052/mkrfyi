@@ -336,7 +336,7 @@ function Flop() {
             :
             <div>click on a row to see only that ID's events</div>
         }
-        <div>{auctionList}</div>
+        <div className="events">{auctionList}</div>
         </>
     )
 }

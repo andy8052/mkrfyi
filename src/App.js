@@ -3,6 +3,7 @@ import './App.css';
 import Liquidity from './Liquidity.js';
 import Chief from './Chief.js';
 import FlipETHA from './FlipETHA.js';
+import FlipBATA from './FlipBATA.js';
 import Flop from './Flop.js';
 
 function App() {
@@ -15,7 +16,9 @@ function App() {
           mkr.fyi
         </h2>
         <div className="settings">
-          <h4 onClick={() => setPage("FLIP")}>flip eth-a</h4>
+          <h4 onClick={() => setPage("FLIPETHA")}>flip eth-a</h4>
+          <h4>&nbsp;|&nbsp;</h4>
+          <h4 onClick={() => setPage("FLIPBATA")}>flip bat-a</h4>
           <h4>&nbsp;|&nbsp;</h4>
           <h4 onClick={() => setPage("FLOP")}>flop</h4>
           <h4>&nbsp;|&nbsp;</h4>
@@ -25,8 +28,10 @@ function App() {
           switch (page) {
             case 'LIQ':
               return <div><Chief/><Liquidity/></div>;
-            case 'FLIP':
+            case 'FLIPETHA':
               return <FlipETHA/>;
+            case 'FLIPBATA':
+              return <FlipBATA/>;
             case 'FLOP':
               return <Flop/>;
             default:
