@@ -23,7 +23,7 @@ const FILE = "0x29ae811400000000000000000000000000000000000000000000000000000000
 const DENY = "0x9c52a7f100000000000000000000000000000000000000000000000000000000";
 const RELY = "0x65fae35e00000000000000000000000000000000000000000000000000000000";
 
-const flopCOntract = new ethers.Contract(FLOP_ADDRESS, flopABI, provider);
+const flopContract = new ethers.Contract(FLOP_ADDRESS, flopABI, provider);
 const osmContract = new ethers.Contract(MEDIANIZER_ADDRESS, osmABI, provider);
 
 function useLocalStorage(key, initialValue) {
