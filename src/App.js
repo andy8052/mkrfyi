@@ -4,6 +4,7 @@ import Liquidity from './Liquidity.js';
 import Chief from './Chief.js';
 import FlipETHA from './FlipETHA.js';
 import FlipBATA from './FlipBATA.js';
+import FlipWBTCA from './FlipWBTCA';
 import Flop from './Flop.js';
 
 function App() {
@@ -20,6 +21,8 @@ function App() {
           <h4>&nbsp;|&nbsp;</h4>
           <h4 onClick={() => setPage("FLIPBATA")}>flip bat-a</h4>
           <h4>&nbsp;|&nbsp;</h4>
+          <h4 onClick={() => setPage("FLIPWBTCA")}>flip wbtc-a</h4>
+          <h4>&nbsp;|&nbsp;</h4>
           <h4 onClick={() => setPage("FLOP")}>flop</h4>
           <h4>&nbsp;|&nbsp;</h4>
           <h4 onClick={() => setPage("LIQ")}>mkr liquidity</h4>
@@ -32,6 +35,8 @@ function App() {
               return <FlipETHA/>;
             case 'FLIPBATA':
               return <FlipBATA/>;
+            case 'FLIPWBTCA':
+              return <FlipWBTCA/>;
             case 'FLOP':
               return <Flop/>;
             default:
