@@ -4,7 +4,7 @@ import './Event.css';
 
 const provider = ethers.getDefaultProvider();
 
-const BAT_FLIP_ADDRESS = "0xaA745404d55f88C108A28c86abE7b5A1E7817c07";
+const BAT_FLIP_ADDRESS = "0x5EdF770FC81E7b8C2c89f71F30f211226a4d7495";
 const OSM_ADDRESS = "0xB4eb54AF9Cc7882DF0121d26c5b97E802915ABe6";
 
 let flipABI = [

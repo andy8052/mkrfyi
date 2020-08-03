@@ -4,7 +4,7 @@ import './Event.css';
 
 const provider = ethers.getDefaultProvider();
 
-const WBTC_FLIP_ADDRESS = "0x3E115d85D4d7253b05fEc9C0bB5b08383C2b0603";
+const WBTC_FLIP_ADDRESS = "0xF70590Fa4AaBe12d3613f5069D02B8702e058569";
 const OSM_ADDRESS = "0xf185d0682d50819263941e5f4EacC763CC5C6C42";
 
 let osmABI = [

@@ -4,7 +4,7 @@ import './Event.css';
 
 const provider = ethers.getDefaultProvider();
 
-const ETH_FLIP_ADDRESS = "0xd8a04f5412223f513dc55f839574430f5ec15531";
+const ETH_FLIP_ADDRESS = "0x0F398a2DaAa134621e4b687FCcfeE4CE47599Cc1";
 const OSM_ADDRESS = "0x81FE72B5A8d1A857d176C3E7d5Bd2679A9B85763";
 
 let osmABI = [
