@@ -6,12 +6,7 @@ const provider = ethers.getDefaultProvider();
 
 const KNC_FLIP_ADDRESS = "0xAD4a0B5F3c6Deb13ADE106Ba6E80Ca6566538eE6";
 const OSM_ADDRESS = "0xf36B79BD4C0904A5F350F1e4f776B81208c13069";
-const CDP_MANAGER_ADDRESS = "0x5ef30b9986345249bc32d8928B7ee64DE9435E39";
-const CAT_ADDRESS = "0x78F2c2AF65126834c51822F56Be0d7469D7A523E";
 
-let flipABI = [
-    "function bids(uint256) public view returns(uint256, uint256, address, uint48, uint48, address, address, uint256)"
-]
 let osmABI = [
     "event LogValue(bytes32 val)"
 ];
@@ -21,7 +16,6 @@ const DENT = "0x5ff3a38200000000000000000000000000000000000000000000000000000000
 const DEAL = "0xc959c42b00000000000000000000000000000000000000000000000000000000";
 const TICK = "0xfc7b6aee00000000000000000000000000000000000000000000000000000000";
 
-const flipContract = new ethers.Contract(KNC_FLIP_ADDRESS, flipABI, provider);
 const osmContract = new ethers.Contract(OSM_ADDRESS, osmABI, provider);
 
 function useLocalStorage(key, initialValue) {
